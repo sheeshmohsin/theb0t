@@ -31,11 +31,7 @@ def ConfigSectionMap(section):
 class MessageLogger:
     """
     An independent logger class (because separation of application
-    and protocol logic is a good     # create factory protocol and application
-    f = LogBotFactory(ConfigSectionMap("SectionOne")['channel'], 'test.log')
-
-    # connect factory to this host and port
-    reactor.connectTCP(ConfigSectionMap("SectionOne")['host'], int(ConfigSectionMap("SectionOne")['port']), f)thing).
+    and protocol logic is a good thing).
     """
     def __init__(self, file):
         self.file = file
