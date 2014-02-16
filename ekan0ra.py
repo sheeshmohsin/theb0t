@@ -56,7 +56,6 @@ class LogBot(irc.IRCClient):
     nickname = "ekan0ra"
 
     def  __init__(self, channel):
-	self.chann = channel
         self.chn = '#'+channel
         self.channel_admin = ['kushal', 'sayan']
 
