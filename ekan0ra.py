@@ -1,4 +1,4 @@
-# twisted imports
+#twisted imports
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
 from twisted.python import log
@@ -8,13 +8,34 @@ from twisted.internet import defer
 import time, sys, os
 import datetime
 import random
+import ConfigParser
 
 now = datetime.datetime.now()
+Config = ConfigParser.ConfigParser()
+Config.read("config.ini")
+
+def ConfigSectionMap(section):
+    values = {}
+    options = Config.options(section)
+    for option in options:
+        try:
+            values[option] = Config.get(section, option)
+            if values[option] == -1:
+                DebugPrint("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            values[option] = None
+    return values
+
 
 class MessageLogger:
     """
     An independent logger class (because separation of application
-    and protocol logic is a good thing).
+    and protocol logic is a good     # create factory protocol and application
+    f = LogBotFactory(ConfigSectionMap("SectionOne")['channel'], 'test.log')
+
+    # connect factory to this host and port
+    reactor.connectTCP(ConfigSectionMap("SectionOne")['host'], int(ConfigSectionMap("SectionOne")['port']), f)thing).
     """
     def __init__(self, file):
         self.file = file
@@ -35,6 +56,7 @@ class LogBot(irc.IRCClient):
     nickname = "ekan0ra"
 
     def  __init__(self, channel):
+	self.chann = channel
         self.chn = '#'+channel
         self.channel_admin = ['kushal', 'sayan']
 
@@ -71,7 +93,7 @@ class LogBot(irc.IRCClient):
         os.system(cmd)
         #msg = 'The logs are updated to: http://sayanchowdhury.dgplug.org/irclogs/%s'%self.filename
         #self.say(channel, msg)
-    # callbacks for events
+        # callbacks for events
 
     def signedOn(self):
         """Called when bot has succesfully signed on to server."""
@@ -103,6 +125,27 @@ class LogBot(irc.IRCClient):
         if msg.lower().startswith('pingall:') and user_cond:
             self.pingmsg = msg.lower().lstrip('pingall:')
             self.names(channel).addCallback(self.pingall)
+
+	# Give right to anybody
+	if msg.lower().startswith('right:') and user_cond:
+	    msgs = msg.lower().lstrip('right: ')
+	    self.mode(channel,True,"+o",limit=None,user=msgs, mask=None)
+	
+	# Take right from anybody
+	if msg.lower().startswith('unright:') and user_cond:
+	    msgs = msg.lower().lstrip('unright: ')
+	    self.mode(channel,True,"-o",limit=None,user=msgs, mask=None)
+	
+	#Give voice to anybody
+	if msg.lower().startswith('voice:') and user_cond:
+	    msgs = msg.lower().lstrip('voice:')
+	    self.mode(channel,True,"+v",limit=None,user=msgs, mask=None)
+	
+	#Take voice of anybody
+	if msg.lower().startswith('unvoice:') and user_cond:
+	    msgs = msg.lower().lstrip('unvoice:')
+	    self.mode(channel,True,"-v",limit=None,user=msgs, mask=None)
+
 
     def action(self, user, channel, msg):
         """This will get called when the bot sees someone do an action."""
@@ -189,10 +232,11 @@ if __name__ == '__main__':
     log.startLogging(sys.stdout)
     
     # create factory protocol and application
-    f = LogBotFactory(sys.argv[1])
+    # create factory protocol and application
+    f = LogBotFactory(ConfigSectionMap("SectionOne")['channel'])
 
     # connect factory to this host and port
-    reactor.connectTCP("irc.freenode.net", 6667, f)
+    reactor.connectTCP(ConfigSectionMap("SectionOne")['host'], int(ConfigSectionMap("SectionOne")['port']), f)
 
     # run bot
     reactor.run()

@@ -8,3 +8,7 @@ Options:
 startclass in the bot's pm.
 endclass in bot's pm.
 pingall - pingall: [message]
+give ops to some user -  right: <username>
+take ops from user -  unright: <username>
+Give voice to some body- voice: <username>
+Removes voice of some body- unvoice: <username>
