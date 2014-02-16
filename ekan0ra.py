@@ -227,7 +227,6 @@ if __name__ == '__main__':
     log.startLogging(sys.stdout)
     
     # create factory protocol and application
-    # create factory protocol and application
     f = LogBotFactory(ConfigSectionMap("SectionOne")['channel'])
 
     # connect factory to this host and port
